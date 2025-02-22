@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "92147769874",
+    "project_id": "campuspro-cabab",
+    "storage_bucket": "campuspro-cabab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92147769874:android:8b5902f00914d14bd46ecb",
+        "android_client_info": {
+          "package_name": "com.example.campus_catalogue"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeNSSCgqhVuI-ROBajqHSRNJcLqYnSmh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
