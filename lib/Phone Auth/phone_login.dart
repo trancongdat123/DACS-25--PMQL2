@@ -128,4 +128,55 @@ class _PhoneAuthenticationState extends State<PhoneAuthentication> {
         });
   }
 
-  
+  bool _validatePhoneNumber() {
+    String phone = phoneController.text.trim();
+    if (phone.isEmpty || !phone.startsWith('+') || phone.length < 10) {
+      setState(() {
+        errorMessage = "Invalid phone number. Please enter a valid number.";
+      });
+      return false;
+    }
+    setState(() {
+      errorMessage = null;
+    });
+    return true;
+  }
+
+  Future<void> _verifyPhoneNumber() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneController.text.trim(),
+        verificationCompleted: (PhoneAuthCredential credential) {
+          // Handle auto retrieval if applicable
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          setState(() {
+            errorMessage = e.message ?? "Verification failed.";
+            isLoading = false;
+          });
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OTPScreen(verificationId: verificationId),
+            ),
+          );
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
+    } catch (e) {
+      setState(() {
+        errorMessage = "Something went wrong. Please try again.";
+        isLoading = false;
+      });
+    }
+  }
+}
