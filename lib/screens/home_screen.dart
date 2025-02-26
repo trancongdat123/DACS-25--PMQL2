@@ -685,3 +685,302 @@ class _AutoScrollShopListState extends State<AutoScrollShopList> {
     );
   }
 }
+
+class HomeScreen extends StatefulWidget {
+  final Buyer buyer;
+  const HomeScreen({super.key, required this.buyer});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  bool _isExpanded = false;
+  final PageController _pageController = PageController();
+
+  final List<String> _titles = [
+    "Explore IITG",
+    "Cart",
+    "History",
+    "Notifications",
+    "Profile",
+  ];
+
+  // Định nghĩa GlobalKeys cho từng trang
+  final GlobalKey<CartState> _cartKey = GlobalKey<CartState>();
+  final GlobalKey<HistoryPageUserState> _historyKey =
+      GlobalKey<HistoryPageUserState>();
+  final GlobalKey<NtfUserPageState> _notificationsKey =
+      GlobalKey<NtfUserPageState>();
+  final GlobalKey<ProfileUsePageState> _profileKey =
+      GlobalKey<ProfileUsePageState>();
+
+  Future<List> getCampusFavouriteShops() async {
+    final shops = await FirebaseFirestore.instance
+        .collection("shop")
+        .orderBy("rating", descending: true)
+        .limit(10)
+        .get();
+    return shops.docs;
+  }
+
+  void _openChatWindow() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: 0.8,
+          child: FoodChatScreen(),
+        );
+      },
+    );
+  }
+
+  void _openMap() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MapScreen(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundYellow,
+        elevation: 0,
+        centerTitle: true,
+        leading: Icon(
+          Icons.circle, // You can choose any icon, but this is just an example.
+          color: AppColors.backgroundYellow, // Same color as the background
+        ),
+        title: GestureDetector(
+          onTap: () {
+            // Navigate to a different page when the title is tapped
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      UserType()), // Replace with the target page
+            );
+          },
+          child: Text(
+            _titles[_selectedIndex],
+            style: AppTypography.textMd.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppColors.backgroundOrange,
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          QRCodeScreen(buyerId: widget.buyer.user_id)),
+                );
+              },
+              icon: const Icon(
+                Icons.qr_code,
+                color: AppColors.backgroundOrange,
+                size: 27.0,
+              ),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: AppColors.backgroundYellow,
+      body: Stack(
+        children: [
+          PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SearchInput(buyer: widget.buyer),
+                    LocationCardWrapper(buyer: widget.buyer),
+                    const ShopHeader(name: "Campus Favourites"),
+                    FutureBuilder<List<dynamic>>(
+                      future: getCampusFavouriteShops(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<dynamic>> snapshot) {
+                        if (snapshot.hasData) {
+                          final campusFavs = snapshot.data!;
+                          return AutoScrollShopList(
+                            shops: campusFavs,
+                            buyer: widget.buyer,
+                          );
+                        } else {
+                          return const CircularProgressIndicator(
+                              color: AppColors.backgroundOrange);
+                        }
+                      },
+                    ),
+                    const ShopHeader(name: "Recommended"),
+                    FutureBuilder<List<dynamic>>(
+                      future: getCampusFavouriteShops(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<dynamic>> snapshot) {
+                        if (snapshot.hasData) {
+                          final campusFavs = snapshot.data!.reversed.toList();
+                          return AutoScrollShopList(
+                            shops: campusFavs,
+                            buyer: widget.buyer,
+                          );
+                        } else {
+                          return const CircularProgressIndicator(
+                            color: AppColors.backgroundOrange,
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Cart(key: _cartKey, buyer: widget.buyer),
+              HistoryPageUser(key: _historyKey, buyer: widget.buyer),
+              NtfUserPage(key: _notificationsKey),
+              ProfileUsePage(key: _profileKey, buyer: widget.buyer),
+            ],
+          ),
+          Positioned(
+            bottom: -10,
+            right: 0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedOpacity(
+                  opacity: _isExpanded ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 60,
+                    height: _isExpanded ? 120 : 0,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: const Offset(4, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Nút mở bản đồ
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: FloatingActionButton(
+                            onPressed: _openMap,
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 139, 44),
+                            child: const Icon(Icons.map, color: Colors.white),
+                            mini: true,
+                          ),
+                        ),
+                        // Nút mở chat
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: FloatingActionButton(
+                            onPressed: _openChatWindow,
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 139, 44),
+                            child: const Icon(Icons.chat, color: Colors.white),
+                            mini: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      setState(() {
+                        _isExpanded = !_isExpanded;
+                      });
+                    },
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    child: Icon(
+                      _isExpanded
+                          ? FontAwesomeIcons.angleDoubleDown
+                          : FontAwesomeIcons.angleDoubleUp,
+                      color: Colors.orange,
+                      size: 30,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: CupertinoTabBar(
+        backgroundColor: AppColors.backgroundYellow,
+        activeColor: AppColors.backgroundOrange,
+        inactiveColor: Colors.grey,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: _buildIcon(Icons.home, 0),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildIcon(Icons.shopping_cart, 1),
+            label: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildIcon(Icons.history, 2),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildIcon(Icons.notifications, 3),
+            label: 'Notifications',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildIcon(Icons.account_circle_outlined, 4),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildIcon(IconData icon, int index) {
+    double iconSize = _selectedIndex == index ? 33.0 : 25.0;
+    return Icon(
+      icon,
+      size: iconSize,
+    );
+  }
+}
