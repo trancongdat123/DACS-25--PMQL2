@@ -938,4 +938,180 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  
+  Widget _buildButtonHst(String label) {
+    final isSelected = selectedButton == label;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedButton = label;
+          fetchOrders();
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: isSelected
+                ? BorderSide(color: AppColors.backgroundOrange, width: 2)
+                : BorderSide.none,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? AppColors.backgroundOrange : Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class InfoPage extends StatefulWidget {
+  final ShopModel shop;
+
+  const InfoPage({super.key, required this.shop});
+
+  @override
+  _InfoPageState createState() => _InfoPageState();
+}
+
+class _InfoPageState extends State<InfoPage> {
+  late TextEditingController ownerNameController;
+  late TextEditingController phoneNumberController;
+  late TextEditingController shopNameController;
+  late TextEditingController openingTimeController;
+  late TextEditingController closingTimeController;
+  late TextEditingController upiIdController;
+
+  bool _isEditable = false;
+  bool _isUpdating = false;
+  String _updateMessage = '';
+  bool _showMessage = false;
+  Map<String, dynamic>? weatherData;
+
+  @override
+  void initState() {
+    super.initState();
+    ownerNameController = TextEditingController(text: widget.shop.ownerName);
+    phoneNumberController =
+        TextEditingController(text: widget.shop.phoneNumber);
+    shopNameController = TextEditingController(text: widget.shop.shopName);
+    openingTimeController =
+        TextEditingController(text: widget.shop.openingTime);
+    closingTimeController =
+        TextEditingController(text: widget.shop.closingTime);
+    upiIdController = TextEditingController(text: widget.shop.upiId);
+    fetchWeather();
+  }
+
+  @override
+  void dispose() {
+    ownerNameController.dispose();
+    phoneNumberController.dispose();
+    shopNameController.dispose();
+    openingTimeController.dispose();
+    closingTimeController.dispose();
+    upiIdController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchWeather() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          'https://api.openweathermap.org/data/2.5/weather?q=Hanoi&appid=e0ea7c2430957c0b90c7a6375a5f8cba&units=metric',
+        ),
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          weatherData = json.decode(response.body);
+        });
+      } else {
+        throw Exception('Failed to load weather data');
+      }
+    } catch (e) {
+      print('Error fetching weather data: $e');
+    }
+  }
+
+  Future<void> updateShop() async {
+    setState(() {
+      _isUpdating = true;
+      _updateMessage = '';
+      _showMessage = false;
+    });
+
+    try {
+      // Tìm kiếm document dựa trên điều kiện
+      final shopQuery = FirebaseFirestore.instance
+          .collection('shop')
+          .where('shop_id', isEqualTo: widget.shop.shopID);
+
+      // Lấy snapshot của document
+      final querySnapshot = await shopQuery.get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Giả sử bạn muốn cập nhật document đầu tiên tìm thấy
+        final shopRef = querySnapshot.docs.first.reference;
+
+        await shopRef.update({
+          'owner_name': ownerNameController.text,
+          'phone_number': phoneNumberController.text,
+          'shop_name': shopNameController.text,
+          'opening_time': openingTimeController.text,
+          'closing_time': closingTimeController.text,
+          'upi_id': upiIdController.text,
+        });
+
+        setState(() {
+          _updateMessage = 'Shop information updated successfully!';
+          _isEditable = false;
+          _showMessage = true;
+        });
+        Future.delayed(const Duration(seconds: 5), () {
+          setState(() {
+            _showMessage = false; // Ẩn thông báo
+          });
+        });
+      } else {
+        setState(() {
+          _updateMessage = "Error : No shop found .";
+          _showMessage = true;
+        });
+        Future.delayed(const Duration(seconds: 5), () {
+          setState(() {
+            _showMessage = false; // Ẩn thông báo
+          });
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _updateMessage = 'Error updating shop: $e';
+        _showMessage = true;
+      });
+      print('Error updating shop: $e');
+    } finally {
+      setState(() {
+        _isUpdating = false;
+      });
+    }
+  }
+
+  IconData _getWeatherIcon(String main) {
+    switch (main.toLowerCase()) {
+      case 'clear':
+        return Icons.wb_sunny;
+      case 'clouds':
+        return Icons.cloud;
+      case 'rain':
+        return Icons.umbrella;
+      case 'snow':
+        return Icons.ac_unit;
+      case 'thunderstorm':
+        return Icons.flash_on;
+      default:
+        return Icons.wb_cloudy;
+    }
+  }
