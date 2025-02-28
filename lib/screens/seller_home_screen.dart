@@ -1115,3 +1115,442 @@ class _InfoPageState extends State<InfoPage> {
         return Icons.wb_cloudy;
     }
   }
+
+  void logOut() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0), // Bo góc cho hộp thoại
+          ),
+          backgroundColor: AppColors.backgroundYellow,
+          title: Row(
+            children: [
+              Icon(Icons.exit_to_app,
+                  color: Colors.orange, size: 30), // Biểu tượng
+              const SizedBox(width: 10),
+              const Text(
+                "LogOut | ChangeRole ",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "What do you want to do next ?",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+            ],
+          ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actions: [
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UserType()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(Icons.swap_horiz),
+              label: const Text("ChangeRole"),
+            ),
+            OutlinedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.orange),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(Icons.logout, color: Colors.orange),
+              label: const Text(
+                "LogOut",
+                style: TextStyle(color: Colors.orange),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget inputText(TextEditingController controller, String hintText,
+      {double width = 250, double height = 50}) {
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: SizedBox(
+        width: width, // Chiều rộng của trường nhập liệu
+        child: TextFormField(
+          decoration: InputDecoration(
+            enabledBorder: const OutlineInputBorder(
+              borderSide:
+                  BorderSide(width: 2, color: Color.fromRGBO(238, 118, 0, 1)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide:
+                  BorderSide(width: 2, color: Color.fromRGBO(238, 118, 0, 1)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            hintText: hintText,
+            suffixIcon: IconButton(
+              icon: Icon(
+                Icons.edit,
+                color: _isEditable
+                    ? Colors.grey[400]
+                    : const Color.fromRGBO(238, 118, 0, 1),
+              ),
+              onPressed: () {
+                setState(() {
+                  _isEditable = !_isEditable;
+                });
+              },
+            ),
+          ),
+          readOnly: !_isEditable, // Nếu không editable thì sẽ chỉ hiển thị
+          controller: controller,
+          style: TextStyle(
+              height: height / 24), // Điều chỉnh chiều cao của TextFormField
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        leading: Icon(
+          Icons.circle, // You can choose any icon, but this is just an example.
+          color: AppColors.backgroundYellow, // Same color as the background
+        ),
+        title: Text("Profile",
+            style: AppTypography.textMd.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.backgroundOrange)),
+        backgroundColor: AppColors.backgroundYellow,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Scanner(
+                            shop: widget.shop,
+                          )),
+                );
+              },
+              icon: const Icon(
+                Icons.qr_code,
+                color: AppColors.backgroundOrange,
+                size: 27.0,
+              ),
+            ),
+          ),
+        ],
+        // leading: IconButton(
+        //   icon: const Icon(
+        //     Icons.arrow_back_ios_new_rounded,
+        //     color: AppColors.backgroundOrange,
+        //   ),
+        //   onPressed: () => Navigator.push(context,
+        //       MaterialPageRoute(builder: (context) => const UserType())),
+        // ),
+        // elevation: 0,
+        // centerTitle: true,
+      ),
+      backgroundColor: AppColors.backgroundYellow,
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Container(
+                  height: 120,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20)),
+                      color: Colors.amber[900]),
+                ),
+                Container(
+                  height: 500,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20)),
+                      color: Colors.white),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                margin: const EdgeInsets.only(top: 5),
+                child: Column(
+                  children: [
+                    Text(
+                      "CAMPUS MEAL",
+                      style: TextStyle(
+                        fontSize: 16.5,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    if (weatherData != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            _getWeatherIcon(weatherData!['weather'][0]['main']),
+                            color: const Color.fromARGB(255, 58, 179, 234),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Hà Nội: ${weatherData!['main']['temp']}°C, ',
+                            style: const TextStyle(
+                                fontSize: 16.5,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                          Text(
+                            weatherData!['weather'][0]['description'],
+                            style: const TextStyle(
+                                fontSize: 16.5,
+                                color: Color.fromARGB(255, 0, 0, 0)),
+                          ),
+                        ],
+                      )
+                    else
+                      const CircularProgressIndicator(),
+                  ],
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                margin: const EdgeInsets.only(top: 50),
+                height: 130,
+                width: 130,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Color.fromRGBO(122, 103, 238, 1), width: 3),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: Image.asset(
+                    "assets/iconprofile.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 95,
+              left: (MediaQuery.of(context).size.width - 250) /
+                  2, // Căn giữa form
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Điều chỉnh chiều rộng và khoảng cách giữa các trường
+                  inputText(ownerNameController, "Owner Name",
+                      width: 250, height: 20),
+                  inputText(phoneNumberController, "Phone Number",
+                      width: 250, height: 20),
+                  inputText(shopNameController, "Shop Name",
+                      width: 250, height: 20),
+                  inputText(openingTimeController, "Opening Time",
+                      width: 250, height: 20),
+                  inputText(closingTimeController, "Closing Time",
+                      width: 250, height: 20),
+                  inputText(upiIdController, "UPI ID", width: 250, height: 20),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 12,
+              left: (MediaQuery.of(context).size.width - 300) / 2 + 25,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: _isUpdating
+                            ? null
+                            : () {
+                                if (_isEditable) {
+                                  updateShop();
+                                }
+                              },
+                        child: Container(
+                          width: 100,
+                          height: 35,
+                          decoration: const BoxDecoration(
+                            color: Color.fromRGBO(238, 118, 0, 1),
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: Center(
+                            child: _isUpdating
+                                ? const CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(
+                                        Icons.update,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "UPDATE",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  BuyerSelectionScreen(shop: widget.shop),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 35,
+                          decoration: const BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: const Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.chat,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  "Chat",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Hàng 2: Nút Log Out | Change Role
+                  GestureDetector(
+                    onTap: logOut,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 2 / 3,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.exit_to_app,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              "Log Out | Change Role",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_showMessage && _updateMessage.isNotEmpty)
+              Positioned(
+                bottom: 570,
+                left: 20,
+                right: 20,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: _updateMessage.contains('Error')
+                        ? Colors.redAccent
+                        : Colors.green,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    _updateMessage,
+                    style: const TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
