@@ -1400,7 +1400,7 @@ class _InfoPageState extends State<InfoPage> {
             ),
             Positioned(
               bottom: 12,
-              left: (MediaQuery.of(context).size.width - 300) / 2 + 25,
+              left: (MediaQuery.of(context).size.width - 300) / 2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -1551,6 +1551,1135 @@ class _InfoPageState extends State<InfoPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SellerHomeScreen extends StatefulWidget {
+  final ShopModel shop;
+
+  const SellerHomeScreen({super.key, required this.shop});
+
+  @override
+  _SellerHomeScreenState createState() => _SellerHomeScreenState();
+}
+
+class _SellerHomeScreenState extends State<SellerHomeScreen> {
+  final PageController _pageController = PageController();
+  int _selectedIndex = 0;
+
+  List<Widget> _widgetOptions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _widgetOptions = [
+      HomePage(shop: widget.shop),
+      HistoryPage(shop: widget.shop),
+      ntfPage(),
+      InfoPage(shop: widget.shop),
+    ];
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 2) {
+      // Khi nhấn nút QR, mở màn hình QRScanner
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Scanner(
+                  shop: widget.shop,
+                )),
+      );
+    } else {
+      // Cập nhật trang hiện tại cho các mục khác
+      setState(() {
+        _selectedIndex = index < 2 ? index : index - 1;
+      });
+      _pageController.jumpToPage(_selectedIndex);
+    }
+  }
+
+  void showEditDialog(BuildContext context, String notificationId,
+      String initialTitle, String initialDescription) {
+    final TextEditingController _titleController = TextEditingController();
+    final TextEditingController _descriptionController =
+        TextEditingController();
+
+    _titleController.text = initialTitle;
+    _descriptionController.text = initialDescription;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    "Edit Notification",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 254, 181, 122),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  Center(
+                    child: Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Text('🔔', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🔔';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('📢', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '📢';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('💡', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '💡';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('⭐', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '⭐';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('⚠️', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '⚠️';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('💸', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '💸';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('🎉', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🎉';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('🔥', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🔥';
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  CupertinoTextField(
+                    controller: _titleController,
+                    placeholder: "Title",
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: CupertinoColors.white,
+                      border: Border.all(
+                          color: CupertinoColors.systemGrey4, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey, fontSize: 16),
+                    style: TextStyle(color: CupertinoColors.black),
+                  ),
+                  SizedBox(height: 10),
+                  CupertinoTextField(
+                    controller: _descriptionController,
+                    placeholder: "Description",
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: CupertinoColors.white,
+                      border: Border.all(
+                          color: CupertinoColors.systemGrey4, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey, fontSize: 16),
+                    style: TextStyle(color: CupertinoColors.black),
+                    maxLines: 4,
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      updateNotification(
+                        notificationId,
+                        _titleController.text,
+                        _descriptionController.text,
+                      );
+                      Navigator.of(context).pop(); // Đóng hộp thoại
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF80CBC4),
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      "Update",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void updateNotification(String id, String title, String description) async {
+    await FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(id)
+        .update({
+      'title': title,
+      'description': description,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Notification updated successfully!')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.backgroundYellow,
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _selectedIndex = index < 2 ? index : index + 1;
+                });
+              },
+              children: _widgetOptions,
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: AppColors.backgroundYellow,
+        child: Container(
+          height: 100,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildBottomNavigationItem(Icons.home_outlined, 'Home', 0),
+              SizedBox(width: 10),
+              _buildBottomNavigationItem(Icons.history, 'History', 1),
+              SizedBox(width: 10),
+              _buildCenteredIcon(Icons.qr_code_scanner, 2),
+              SizedBox(width: 10),
+              _buildBottomNavigationItem(Icons.notifications, 'Notices', 3),
+              SizedBox(width: 10),
+              _buildBottomNavigationItem(
+                  Icons.account_circle_outlined, 'Profile', 4),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationItem(IconData icon, String label, int index) {
+    return GestureDetector(
+      onTap: () {
+        _onItemTapped(index);
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: _selectedIndex == index
+                ? AppColors.backgroundOrange
+                : Colors.grey,
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              color: _selectedIndex == index
+                  ? AppColors.backgroundOrange
+                  : Colors.grey,
+              fontWeight:
+                  _selectedIndex == index ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCenteredIcon(IconData icon, int index) {
+    return GestureDetector(
+      onTap: () {
+        _onItemTapped(index);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.backgroundOrange,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 28,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget ntfPage() {
+    return Scaffold(
+      backgroundColor: AppColors.backgroundYellow,
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        leading: Icon(
+          Icons.circle, // You can choose any icon, but this is just an example.
+          color: AppColors.backgroundYellow, // Same color as the background
+        ),
+        title: Text("Notifications",
+            style: AppTypography.textMd.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.backgroundOrange)),
+        backgroundColor: AppColors.backgroundYellow,
+        // leading: IconButton(
+        //   icon: const Icon(
+        //     Icons.arrow_back_ios_new_rounded,
+        //     color: AppColors.backgroundOrange,
+        //   ),
+        //   onPressed: () => Navigator.push(context,
+        //       MaterialPageRoute(builder: (context) => const UserType())),
+        // ),
+        // elevation: 0,
+        // centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.add,
+              color: AppColors.backgroundOrange,
+            ),
+            // onPressed: () {
+            //   Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) => createNotificationForm()),
+            //   );
+            // },
+            onPressed: () {
+              showCreateNotificationDialog(context);
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Scanner(
+                            shop: widget.shop,
+                          )),
+                );
+              },
+              icon: const Icon(
+                Icons.qr_code,
+                color: AppColors.backgroundOrange,
+                size: 27.0,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('notifications')
+                  .where('shop_id', isEqualTo: widget.shop.shopID)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('No notifications available'));
+                }
+                final notifications = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: notifications.length,
+                  itemBuilder: (context, index) {
+                    final data =
+                        notifications[index].data() as Map<String, dynamic>;
+                    return ntfcard(
+                      data['title'] ?? 'No Title',
+                      data['description'] ?? 'No Description',
+                      data['date'] ?? 'Unknown Date',
+                      isNew: data['isNew'] ?? false,
+                      onEdit: () {
+                        showEditDialog(
+                          context,
+                          notifications[index].id,
+                          data['title'],
+                          data['description'],
+                        );
+                      },
+                      onDelete: () {
+                        FirebaseFirestore.instance
+                            .collection('notifications')
+                            .doc(notifications[index].id)
+                            .delete();
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Received Notifications',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: fakeNotifications.length,
+              itemBuilder: (context, index) {
+                final fakeData = fakeNotifications[index];
+                return ntfcard(
+                  fakeData['title'] ?? 'No Title',
+                  fakeData['description'] ?? 'No Description',
+                  fakeData['date'] ?? 'Unknown Date',
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  final List<Map<String, String>> fakeNotifications = [
+    {
+      "title": "Đơn hàng từ Khách hàng Khoa",
+      "description": "Khách hàng A đã đặt hàng với mã: #1001.",
+      "date": "01/10/2024",
+    },
+    {
+      "title": "Đơn hàng từ Khách hàng Nam",
+      "description": "Khách hàng B đã đặt hàng với mã: #1002.",
+      "date": "02/10/2024",
+    },
+    {
+      "title": "Đơn hàng từ Khách hàng Tuấn",
+      "description": "Khách hàng C đã đặt hàng với mã: #1003.",
+      "date": "01/10/2024",
+    },
+  ];
+
+  Widget ntfcard(
+    String title,
+    String description,
+    String date, {
+    bool isNew = false, // Tham số để xác định xem thông báo có mới hay không
+    VoidCallback? onEdit,
+    VoidCallback? onDelete,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      color: Colors.amber[50],
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.check_circle,
+              color: Colors.green,
+              size: 24,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 255, 145, 0),
+                        ),
+                      ),
+                      if (isNew) // Kiểm tra xem có là thông báo mới không
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: const Text(
+                            'NEW',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      date,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Nút chỉnh sửa nếu có
+            if (onEdit != null)
+              IconButton(
+                icon: Icon(Icons.edit, color: Colors.blue),
+                onPressed: onEdit,
+              ),
+            // Nút xóa nếu có
+            if (onDelete != null)
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  // Hiện hộp thoại xác nhận trước khi xóa
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Xác nhận xóa'),
+                        content: Text(
+                            'Bạn có chắc chắn muốn xóa thông báo này không?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Đóng hộp thoại
+                            },
+                            child: Text('Hủy'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              if (onDelete != null) onDelete(); // Gọi hàm xóa
+                              Navigator.of(context).pop(); // Đóng hộp thoại
+                            },
+                            child: Text('Xóa'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showCreateNotificationDialog(BuildContext context) {
+    final _titleController = TextEditingController();
+    final _descriptionController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    "Create Notification",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 254, 181, 122),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  Center(
+                    child: Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Text('🔔', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🔔';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('📢', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '📢';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('💡', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '💡';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('⭐', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '⭐';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('⚠️', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '⚠️';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('💸', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '💸';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('🎉', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🎉';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('🔥', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🔥';
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  CupertinoTextField(
+                    controller: _titleController,
+                    placeholder: "Title",
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: CupertinoColors.white,
+                      border: Border.all(
+                          color: CupertinoColors.systemGrey4, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey, fontSize: 16),
+                    style: TextStyle(color: CupertinoColors.black),
+                  ),
+                  SizedBox(height: 10),
+                  CupertinoTextField(
+                    controller: _descriptionController,
+                    placeholder: "Description",
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: CupertinoColors.white,
+                      border: Border.all(
+                          color: CupertinoColors.systemGrey4, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey, fontSize: 16),
+                    style: TextStyle(color: CupertinoColors.black),
+                    maxLines: 4,
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      createNotification(
+                        _titleController.text,
+                        _descriptionController.text,
+                      );
+                      Navigator.of(context).pop(); // Đóng hộp thoại
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF80CBC4),
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      "Create",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void createNotification(String title, String description) async {
+    CollectionReference notifications =
+        FirebaseFirestore.instance.collection('notifications');
+
+    await notifications.add({
+      'title': title,
+      'description': description,
+      'date': DateFormat('HH:mm dd/MM/yyyy').format(DateTime.now()),
+      'shop_id': widget.shop.shopID,
+      'isNew': true,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Notification created successfully!')),
+    );
+  }
+}
+
+class OrderTile extends StatelessWidget {
+  final String buyerPhone;
+  final String buyerName;
+  final String txnId;
+  final String status;
+  final int totalAmount;
+
+  const OrderTile({
+    Key? key,
+    required this.buyerName,
+    required this.buyerPhone,
+    required this.status,
+    required this.totalAmount,
+    required this.txnId,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 80,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppColors.signIn,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                buyerPhone,
+                style: AppTypography.textMd.copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                buyerName,
+                style: AppTypography.textMd.copyWith(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  _buildActionButton(
+                      "CONFIRM", AppColors.backgroundOrange, Colors.white),
+                  const SizedBox(width: 8),
+                  _buildActionButton(
+                      "REJECT", AppColors.backgroundYellow, Colors.black),
+                  const SizedBox(width: 8),
+                  _buildActionButton(
+                      "VIEW", AppColors.backgroundYellow, Colors.black),
+                ],
+              ),
+              Text(
+                "Rs. $totalAmount",
+                textAlign: TextAlign.end,
+                style: AppTypography.textMd.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(
+      String label, Color backgroundColor, Color textColor) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.textMd.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+}
+
+class EditNotificationForm extends StatefulWidget {
+  final String notificationId;
+  final String initialTitle;
+  final String initialDescription;
+
+  const EditNotificationForm({
+    Key? key,
+    required this.notificationId,
+    required this.initialTitle,
+    required this.initialDescription,
+  }) : super(key: key);
+
+  @override
+  _EditNotificationFormState createState() => _EditNotificationFormState();
+
+  // Hàm tĩnh để gọi EditNotificationForm từ bất kỳ đâu
+  static void open(BuildContext context, String notificationId,
+      String initialTitle, String initialDescription) {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => EditNotificationForm(
+          notificationId: notificationId,
+          initialTitle: initialTitle,
+          initialDescription: initialDescription,
+        ),
+      ),
+    );
+  }
+}
+
+class _EditNotificationFormState extends State<EditNotificationForm> {
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController.text = widget.initialTitle;
+    _descriptionController.text = widget.initialDescription;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text("Edit Notification"),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            // showEditDialog(context);
+          },
+          child: Icon(CupertinoIcons.pen),
+        ),
+      ),
+      child: SafeArea(
+        child: Center(
+          child: CupertinoButton.filled(
+            onPressed: () {
+              // showEditDialog(context); // Hiển thị dialog
+            },
+            child: Text('Edit Notification'),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Hiển thị dialog để chỉnh sửa thông báo
+  void showEditDialog(BuildContext context, String notificationId,
+      String initialTitle, String initialDescription) {
+    final TextEditingController _titleController = TextEditingController();
+    final TextEditingController _descriptionController =
+        TextEditingController();
+
+    // Thiết lập giá trị ban đầu
+    _titleController.text = initialTitle;
+    _descriptionController.text = initialDescription;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    "Edit Notification",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 254, 181, 122),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  Center(
+                    child: Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Text('🔔', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🔔';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('📢', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '📢';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('💡', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '💡';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('⭐', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '⭐';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('⚠️', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '⚠️';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('💸', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '💸';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('🎉', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🎉';
+                          },
+                        ),
+                        IconButton(
+                          icon: Text('🔥', style: TextStyle(fontSize: 24)),
+                          onPressed: () {
+                            _titleController.text += '🔥';
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  CupertinoTextField(
+                    controller: _titleController,
+                    placeholder: "Title",
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: CupertinoColors.white,
+                      border: Border.all(
+                          color: CupertinoColors.systemGrey4, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey, fontSize: 16),
+                    style: TextStyle(color: CupertinoColors.black),
+                  ),
+                  SizedBox(height: 10),
+                  CupertinoTextField(
+                    controller: _descriptionController,
+                    placeholder: "Description",
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: CupertinoColors.white,
+                      border: Border.all(
+                          color: CupertinoColors.systemGrey4, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    placeholderStyle: TextStyle(
+                        color: CupertinoColors.systemGrey, fontSize: 16),
+                    style: TextStyle(color: CupertinoColors.black),
+                    maxLines: 4,
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      updateNotification(
+                        notificationId,
+                        _titleController.text,
+                        _descriptionController.text,
+                      );
+                      Navigator.of(context).pop(); // Đóng hộp thoại
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF80CBC4),
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      "Update",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void updateNotification(String id, String title, String description) async {
+    await FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(id)
+        .update({
+      'title': title,
+      'description': description,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Notification updated successfully!')),
     );
   }
 }
